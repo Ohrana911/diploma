@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Interviewer</title>
+</head>
+<body>
+<h1>Чат с ИИ-интервьюером</h1>
+
+<div id="chatBox" style="white-space: pre-line; border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll;"></div>
+
+<input type="text" id="userInput" placeholder="Ваш ответ..." style="width: 80%;" />
+<button onclick="sendMessage()">Отправить</button>
+
+<script>
+        async function sendMessage() {
+            const input = document.getElementById("userInput").value;
+            if (!input.trim()) return;
+
+            const chatBox = document.getElementById("chatBox");
+            chatBox.innerText += "Вы: " + input + "\n";
+
+            const response = await fetch("/interview/ask", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(input)
+            });
+
+            const data = await response.text();
+            chatBox.innerText += "ИИ: " + data + "\n";
+            document.getElementById("userInput").value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
