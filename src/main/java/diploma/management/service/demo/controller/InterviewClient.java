@@ -1,0 +1,29 @@
+package diploma.management.service.demo.controller;
+
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
+
+public class InterviewClient {
+
+    private static final String INTERVIEW_API_URL = "https://1572-34-125-81-219.ngrok-free.app/v1/chat/completions";
+
+
+    public static void main(String[] args) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        // Начать интервью
+        String startMessage = "{\"message\": \"Привет, проведи со мной техническое интервью по Java.\"}";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> entity = new HttpEntity<>(startMessage, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(INTERVIEW_API_URL + "/start", HttpMethod.POST, entity, String.class);
+        System.out.println("Первый вопрос: " + response.getBody());
+
+        // Ответ на первый вопрос
+        String userResponse = "{\"message\": \"Мой ответ на первый вопрос...\"}";
+        entity = new HttpEntity<>(userResponse, headers);
+        response = restTemplate.exchange(INTERVIEW_API_URL + "/next", HttpMethod.POST, entity, String.class);
+        System.out.println("Следующий вопрос: " + response.getBody());
+    }
+}

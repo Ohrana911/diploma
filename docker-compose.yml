@@ -28,5 +28,18 @@ services:
       SPRING_DATASOURCE_PASSWORD: secret
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
+  flask:
+    image: python:3.9  # используем официальное изображение Python
+    container_name: flask_api
+    restart: always
+    environment:
+      FLASK_APP: app.py
+      FLASK_RUN_HOST: 0.0.0.0
+    ports:
+      - "5000:5000"  # Пробрасываем порт Flask
+    volumes:
+      - ./flask:/app  # Папка с Flask-приложением на локальной машине
+    working_dir: /app  # Рабочая директория для Flask-приложения
+
 volumes:
   postgres_data:
