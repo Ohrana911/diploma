@@ -5,7 +5,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class InterviewClient {
 
-    private static final String INTERVIEW_API_URL = "https://1572-34-125-81-219.ngrok-free.app/v1/chat/completions";
+    private static final String INTERVIEW_API_URL = "https://bdff-34-126-137-16.ngrok-free.app/interview";
 
 
     public static void main(String[] args) {
@@ -17,7 +17,9 @@ public class InterviewClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(startMessage, headers);
 
-        ResponseEntity<String> response = restTemplate.exchange(INTERVIEW_API_URL + "/start", HttpMethod.POST, entity, String.class);
+//        ResponseEntity<String> response = restTemplate.exchange(INTERVIEW_API_URL + "/start", HttpMethod.POST, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(INTERVIEW_API_URL, HttpMethod.POST, entity, String.class);
+
         System.out.println("Первый вопрос: " + response.getBody());
 
         // Ответ на первый вопрос
