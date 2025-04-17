@@ -1,9 +1,6 @@
 package diploma.management.service.demo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
@@ -14,9 +11,11 @@ public class InterviewSession {
     private Long id;
 
     private String userId; // идентификатор пользователя
-    private String status; // статус интервью (например, "IN_PROGRESS", "COMPLETED")
+    @Column(nullable = false)
+    private String status = "NEW"; // Дефолтное значение // статус интервью (например, "IN_PROGRESS", "COMPLETED")
     private LocalDateTime startTime; // время начала
     private LocalDateTime endTime; // время окончания
+    @Column(nullable = false)
     private String sessionToken; // токен сессии для продолжения диалога (если нужно)
 
     public Long getId() {

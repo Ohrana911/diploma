@@ -7,16 +7,23 @@ import diploma.management.service.demo.entity.InterviewMessage;
 import diploma.management.service.demo.entity.InterviewSession;
 import diploma.management.service.demo.repository.InterviewMessageRepository;
 import diploma.management.service.demo.repository.InterviewSessionRepository;
+import diploma.management.service.demo.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@Slf4j // Ломбок для логирования
 public class FlaskInterviewService {
 
     @Value("${flask.api.url}")
@@ -106,16 +113,51 @@ public class FlaskInterviewService {
     }
 
 
-    private InterviewSession getOrCreateSession(Long sessionId) {
-        InterviewSession session;
+//    private InterviewSession getOrCreateSession(Long sessionId) {
+//        if (sessionId != null) {
+//            return interviewSessionRepository.findById(sessionId)
+//                    .orElseThrow(() -> new RuntimeException("Session not found"));
+//        }
+//
+//        InterviewSession session = new InterviewSession();
+//        session.setSessionToken(UUID.randomUUID().toString()); // Генерируем токен
+//        session.setStatus("NEW"); // Дефолтный статус
+//        return interviewSessionRepository.save(session);
+//    }
+
+    public InterviewSession getOrCreateSession(Long sessionId) {
         if (sessionId != null) {
-            session = interviewSessionRepository.findById(sessionId)
-                    .orElseThrow(() -> new RuntimeException("Session not found"));
-        } else {
-            session = new InterviewSession(); // Create a new session if none exists
-            interviewSessionRepository.save(session);
+            log.info("Поиск сессии ID: {}", sessionId);
+            return interviewSessionRepository.findById(sessionId)
+                    .filter(s -> {
+                        if (s.getSessionToken() == null || s.getStatus() == null) {
+                            log.warn("Найдена невалидная сессия ID: {}", s.getId());
+                        }
+                        return s.getSessionToken() != null && s.getStatus() != null;
+                    })
+                    .orElseGet(() -> {
+                        log.warn("Сессия ID: {} не найдена или невалидна. Создаю новую.", sessionId);
+                        return createNewSession();
+                    });
         }
-        return session;
+        log.info("Создание новой сессии (sessionId=null)");
+        return createNewSession();
+    }
+
+    private String getCurrentUsername() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName(); // возвращает логин пользователя
+    }
+
+    private InterviewSession createNewSession() {
+        InterviewSession session = new InterviewSession();
+        session.setSessionToken(UUID.randomUUID().toString());
+        session.setStartTime(LocalDateTime.now());
+        session.setEndTime(LocalDateTime.now());
+        String username = getCurrentUsername();
+        session.setUserId(username); // Сохраняем имя залогиненного пользователя
+        session.setStatus("NEW");
+        return interviewSessionRepository.save(session);
     }
 
     public List<InterviewMessage> getSessionMessages(Long sessionId) {
