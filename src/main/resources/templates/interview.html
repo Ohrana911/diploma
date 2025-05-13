@@ -64,32 +64,114 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>AI Интервьюер</title>
+    <title>Интервью с AI</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 20px; }
-        #chat { border: 1px solid #ccc; padding: 10px; min-height: 300px; margin-bottom: 10px; }
-        .message { margin-bottom: 10px; }
-        .user { font-weight: bold; color: #007bff; }
-        .bot { font-weight: bold; color: #28a745; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        #chat {
+            border: 1px solid #ddd;
+            padding: 20px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #fefefe;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .user {
+            background-color: #e0f0ff;
+            align-self: flex-end;
+            color: #007bff;
+        }
+
+        .bot {
+            background-color: #e4fbe6;
+            align-self: flex-start;
+            color: #28a745;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:last-child {
+            background-color: #dc3545;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
-<h1>Интервью с AI</h1>
-<div id="chat"></div>
+<div class="container">
+    <h1>Интервью с AI</h1>
+    <div id="chat"></div>
 
-<input type="text" id="messageInput" placeholder="Ваш ответ..." style="width: 80%;">
-<button onclick="sendMessage()">Отправить</button>
-<button onclick="endInterview()">Завершить интервью</button>
+    <div class="input-area">
+        <input type="text" id="messageInput" placeholder="Ваш ответ...">
+        <button onclick="sendMessage()">Отправить</button>
+        <button onclick="endInterview()">Завершить</button>
+    </div>
+</div>
 
 <script>
-    const apiUrl = 'https://6ed8-34-90-99-21.ngrok-free.app/interview';
-    const endUrl = 'https://6ed8-34-90-99-21.ngrok-free.app/interview/finish';
+    const apiUrl = 'https://e98a-34-124-132-2.ngrok-free.app/interview';
+    const endUrl = 'https://e98a-34-124-132-2.ngrok-free.app/interview/finish';
 
     function addMessage(content, sender) {
         const chat = document.getElementById("chat");
         const div = document.createElement("div");
         div.className = "message " + sender;
         div.textContent = (sender === "user" ? "Вы: " : "AI: ") + content;
+        div.style.alignSelf = sender === "user" ? "flex-end" : "flex-start";
         chat.appendChild(div);
         chat.scrollTop = chat.scrollHeight;
     }
@@ -126,7 +208,7 @@
             const response = await fetch(endUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({}) // Пустой объект, без sessionId
+                body: JSON.stringify({})
             });
 
             const data = await response.json();
@@ -140,4 +222,5 @@
 </script>
 </body>
 </html>
+
 

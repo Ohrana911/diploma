@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Профиль пользователя</title>
+  <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+
+        .profile-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .info {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        input[type="password"] {
+            padding: 10px;
+            width: 100%;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #00c9a7;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #00b293;
+        }
+
+        .link {
+            display: block;
+            margin-top: 20px;
+            color: #fff;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<div class="profile-card">
+  <h2>Профиль</h2>
+  <div class="info" id="userInfo">Загрузка...</div>
+
+  <h3>Сменить пароль</h3>
+  <input type="password" id="newPassword" placeholder="Новый пароль">
+  <button onclick="updatePassword()">Сохранить</button>
+
+  <a href="/interview" class="link">Начать интервью</a>
+</div>
+
+<script>
+    async function loadProfile() {
+        try {
+            const res = await fetch('/api/profile');
+            if (res.ok) {
+                const user = await res.json();
+                document.getElementById("userInfo").textContent = `Имя пользователя: ${user.username}`;
+            } else {
+                document.getElementById("userInfo").textContent = "Ошибка загрузки профиля.";
+            }
+        } catch (e) {
+            document.getElementById("userInfo").textContent = "Ошибка соединения с сервером.";
+            console.error(e);
+        }
+    }
+
+    async function updatePassword() {
+        const password = document.getElementById("newPassword").value;
+        if (!password) {
+            alert("Введите новый пароль");
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: password })
+            });
+
+            if (res.ok) {
+                alert("Пароль успешно обновлён!");
+                document.getElementById("newPassword").value = "";
+            } else {
+                alert("Ошибка при обновлении пароля.");
+            }
+        } catch (e) {
+            alert("Ошибка соединения.");
+            console.error(e);
+        }
+    }
+
+    window.onload = loadProfile;
+</script>
+</body>
+</html>

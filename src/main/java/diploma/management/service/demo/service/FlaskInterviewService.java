@@ -39,41 +39,6 @@ public class FlaskInterviewService {
         this.interviewMessageRepository = interviewMessageRepository;
     }
 
-//    public String startInterview(Long sessionId, String userInput) {
-//        InterviewSession session = getOrCreateSession(sessionId);
-//
-//        Message userMessage = new Message("user", userInput);
-//        InterviewMessage interviewMessage = new InterviewMessage(session, userMessage.getContent(), "user");
-//        interviewMessageRepository.save(interviewMessage);
-//
-//        ChatRequest request = new ChatRequest(
-//                Collections.singletonList(userMessage),
-//                0.7,
-//                300
-//        );
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//
-//        HttpEntity<ChatRequest> entity = new HttpEntity<>(request, headers);
-//
-//        ResponseEntity<ChatResponse> response = restTemplate.exchange(
-//                flaskApiUrl,
-//                HttpMethod.POST,
-//                entity,
-//                ChatResponse.class
-//        );
-//
-////        String botResponse = response.getBody().getChoices().get(0).getMessage().getContent();
-//        String botResponse = response.getBody().getResponse();
-//
-//
-//        InterviewMessage botMessage = new InterviewMessage(session, botResponse, "bot");
-//        interviewMessageRepository.save(botMessage);
-//
-//        return botResponse;
-//    }
-
     public String startInterview(Long sessionId, String userInput) {
         InterviewSession session = getOrCreateSession(sessionId);
 
