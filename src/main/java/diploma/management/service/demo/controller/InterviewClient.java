@@ -5,7 +5,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class InterviewClient {
 
-    private static final String INTERVIEW_API_URL = "https://e98a-34-124-132-2.ngrok-free.app/interview";
+    private static final String INTERVIEW_API_URL = "https://5b5d-34-87-126-212.ngrok-free.app/interview";
 
 
     public static void main(String[] args) {

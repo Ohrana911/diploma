@@ -154,6 +154,11 @@
 <div class="container">
     <h1>Интервью с AI</h1>
     <div id="chat"></div>
+    <div id="recommendations" style="display:none; margin-top: 20px;">
+        <h3>Рекомендации</h3>
+        <pre id="recommendationText" style="white-space: pre-wrap; background: #f0f0f0; padding: 15px; border-radius: 8px;"></pre>
+    </div>
+
 
     <div class="input-area">
         <input type="text" id="messageInput" placeholder="Ваш ответ...">
@@ -163,8 +168,9 @@
 </div>
 
 <script>
-    const apiUrl = 'https://e98a-34-124-132-2.ngrok-free.app/interview';
-    const endUrl = 'https://e98a-34-124-132-2.ngrok-free.app/interview/finish';
+    const apiUrl = 'https://5b5d-34-87-126-212.ngrok-free.app/interview';
+<!--    const endUrl = 'https://4368-34-87-118-14.ngrok-free.app/interview/finish';-->
+    const endUrl = '/api/interview/finish';
 
     function addMessage(content, sender) {
         const chat = document.getElementById("chat");
@@ -203,6 +209,23 @@
         }
     }
 
+<!--    async function endInterview() {-->
+<!--        try {-->
+<!--            const response = await fetch(endUrl, {-->
+<!--                method: "POST",-->
+<!--                headers: { "Content-Type": "application/json" },-->
+<!--                body: JSON.stringify({})-->
+<!--            });-->
+
+<!--            const data = await response.json();-->
+<!--            alert("Интервью завершено.\nОценка: " + data.score);-->
+<!--            addMessage("Интервью завершено. Оценка: " + data.score, "bot");-->
+<!--        } catch (error) {-->
+<!--            alert("Ошибка при завершении интервью");-->
+<!--            console.error(error);-->
+<!--        }-->
+<!--    }-->
+
     async function endInterview() {
         try {
             const response = await fetch(endUrl, {
@@ -212,13 +235,24 @@
             });
 
             const data = await response.json();
-            alert("Интервью завершено.\nОценка: " + data.score);
-            addMessage("Интервью завершено. Оценка: " + data.score, "bot");
+
+            if (data.score !== undefined) {
+                addMessage("Интервью завершено. Оценка: " + data.score, "bot");
+
+                if (data.recommendations) {
+                    document.getElementById("recommendations").style.display = "block";
+                    document.getElementById("recommendationText").textContent = data.recommendations;
+                }
+            } else {
+                addMessage("Произошла ошибка при завершении", "bot");
+            }
         } catch (error) {
             alert("Ошибка при завершении интервью");
             console.error(error);
         }
     }
+
+
 </script>
 </body>
 </html>

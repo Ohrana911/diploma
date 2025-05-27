@@ -18,6 +18,10 @@ public class InterviewResult {
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
+    @Column(columnDefinition = "TEXT")
+    private String recommendations;
+
+
     public Long getId() {
         return id;
     }
@@ -48,6 +52,14 @@ public class InterviewResult {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getRecommendations() {
+        return recommendations;
+    }
+
+    public void setRecommendations(String recommendations) {
+        this.recommendations = recommendations;
     }
 }
 

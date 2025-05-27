@@ -10,9 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j // Ломбок для логирования
 @RestController
@@ -28,13 +32,6 @@ public class InterviewController {
         this.interviewResultRepository = interviewResultRepository;
     }
 
-    // Начало нового интервью или продолжение существующего
-//    @PostMapping("/start")
-//    public String startInterview(@RequestParam(value = "sessionId", required = false) Long sessionId,
-//                                 @RequestBody String userMessage) {
-//        // Вызов сервиса Flask для обработки сообщения
-//        return flaskInterviewService.startInterview(sessionId, userMessage);
-//    }
 
     @PostMapping
     public String startInterview(@RequestParam(value = "sessionId", required = false) Long sessionId,
@@ -48,29 +45,88 @@ public class InterviewController {
         return flaskInterviewService.getSessionMessages(sessionId);
     }
 
-    // 🔥 Новый метод завершения интервью
+
+//    @PostMapping("/finish")
+//    public ResponseEntity<ChatResponse> finishInterview(Authentication authentication) {
+//        log.info("Метод finishInterview вызван");
+//        String username = authentication.getName();
+//
+//        try {
+//
+//            HttpHeaders headers = new HttpHeaders();
+//            headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//            Map<String, String> request = new HashMap<>();
+//            request.put("sessionId", "default"); // Или другой ID, если есть
+//
+//            HttpEntity<Map<String, String>> entity = new HttpEntity<>(request, headers);
+//
+//            ResponseEntity<Map> flaskResponse = new RestTemplate()
+//                    .postForEntity("https://c117-34-139-46-77.ngrok-free.app/interview/finish", entity, Map.class);
+//
+//            double score = Double.parseDouble(flaskResponse.getBody().get("score").toString());
+//            String recommendations = flaskResponse.getBody().get("recommendations").toString();
+//
+//            System.out.println("DEBUG: Сохраняем результат — score = " + score);
+//
+//            InterviewResult result = new InterviewResult();
+//            result.setUsername(username);
+//            result.setScore(score);
+//            result.setTimestamp(LocalDateTime.now());
+//            result.setRecommendations(recommendations); // добавь это поле в сущность!
+//            interviewResultRepository.save(result);
+//
+//
+//            ChatResponse response = new ChatResponse();
+//            response.setResponse("Интервью завершено. Оценка: " + score + "\n\nРекомендации:\n" + recommendations);
+//            return ResponseEntity.ok(response);
+//
+//        } catch (Exception e) {
+//            log.error("Ошибка при завершении интервью: ", e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+
     @PostMapping("/finish")
-    public ResponseEntity<ChatResponse> finishInterview(Authentication authentication) {
+    public ResponseEntity<Map<String, Object>> finishInterview(Authentication authentication) {
         log.info("Метод finishInterview вызван");
         String username = authentication.getName();
-        log.info("Завершение интервью для пользователя: {}", username);
-        // Сюда подставь, если хочешь вытянуть оценку из Flask:
-        // double score = flaskInterviewService.getScoreForUser(username);
-        double score = Math.random() * 100; // пока просто рандомный score
-        log.info("Оценка интервью: {}", score);
 
-        InterviewResult result = new InterviewResult();
-        result.setUsername(username);
-        result.setScore(score);
-        result.setTimestamp(LocalDateTime.now());  // если ты добавил поле timestamp
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
 
-        interviewResultRepository.save(result);
-        log.info("Результат интервью сохранен в базе данных");
+            Map<String, String> request = new HashMap<>();
+            request.put("sessionId", "default");
 
-        ChatResponse response = new ChatResponse();
-        response.setResponse("Интервью завершено. Оценка: " + score);
-        return ResponseEntity.ok(response);
+            HttpEntity<Map<String, String>> entity = new HttpEntity<>(request, headers);
+
+            ResponseEntity<Map> flaskResponse = new RestTemplate()
+                    .postForEntity("https://5b5d-34-87-126-212.ngrok-free.app/interview/finish", entity, Map.class);
+
+            double score = Double.parseDouble(flaskResponse.getBody().get("score").toString());
+            String recommendations = flaskResponse.getBody().get("recommendations").toString();
+
+            InterviewResult result = new InterviewResult();
+            result.setUsername(username);
+            result.setScore(score);
+            result.setTimestamp(LocalDateTime.now());
+            result.setRecommendations(recommendations);
+            interviewResultRepository.save(result);
+
+            // ⬇️ возвращаем нужный формат:
+            Map<String, Object> response = new HashMap<>();
+            response.put("score", score);
+            response.put("recommendations", recommendations);
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            log.error("Ошибка при завершении интервью: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
+
 
 
 

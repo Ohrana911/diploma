@@ -70,6 +70,8 @@ public class FlaskInterviewService {
         return botResponse;
     }
 
+
+
     private String extractResponse(String json) {
         // Простейший способ вытащить строку из {"response": "..."}
         int start = json.indexOf(":\"") + 2;
